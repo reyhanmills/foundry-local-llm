@@ -1,0 +1,3 @@
+Foundry Local, yapay zeka modellerini bilgisayarda yerel olarak çalıştırmayı sağlayan bir araçtır.
+RAG, modelin cevap üretmeden önce belgelerden ilgili bilgiyi bulmasını sağlar.
+SQLite, bu projede belge parçalarını saklamak için kullanılacaktır.
