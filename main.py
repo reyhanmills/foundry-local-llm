@@ -3,6 +3,7 @@ from pathlib import Path
 
 # database.py içindeki fonksiyonları bu dosyada kullanmak için içe aktarıyoruz.
 from database import create_database, clear_documents, save_chunk, get_all_documents
+from embedding_utils import generate_embedding
 
 
 def split_into_chunks(text):
@@ -48,8 +49,11 @@ def main():
         for index, chunk in enumerate(chunks, start=1):
             print(f"Chunk {index}: {chunk}")
 
-            # Chunkı SQLite veritabanına kaydediyoruz.
-            save_chunk(file_path.name, chunk)
+            # Chunk için embedding üretiyoruz.
+            embedding = generate_embedding(chunk)
+
+            # Chunkı ve embedding bilgisini SQLite veritabanına kaydediyoruz.
+            save_chunk(file_path.name, chunk, embedding)
 
     print("Chunklar veritabanına kaydedildi.")
 

@@ -1,6 +1,6 @@
 # SQLite veritabanı ile çalışmak için Python'un hazır modülünü içe aktarıyoruz.
 import sqlite3
-
+import json
 
 # Veritabanı dosyamızın adı.
 # Bu dosya proje klasörünün içinde oluşacak.
@@ -18,12 +18,13 @@ def create_database():
     # documents adında bir tablo oluşturuyoruz.
     # IF NOT EXISTS: Eğer tablo zaten varsa tekrar oluşturma demek.
     cursor.execute("""
-        CREATE TABLE IF NOT EXISTS documents (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            file_name TEXT NOT NULL,
-            chunk_text TEXT NOT NULL
-        )
-    """)
+    CREATE TABLE IF NOT EXISTS documents (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        file_name TEXT NOT NULL,
+        chunk_text TEXT NOT NULL,
+        embedding TEXT
+    )
+""")
 
     # Yapılan değişiklikleri veritabanına kaydediyoruz.
     connection.commit()
@@ -47,17 +48,22 @@ def clear_documents():
     # Bağlantıyı kapatıyoruz.
     connection.close()
 
-
-def save_chunk(file_name, chunk_text):
+def save_chunk(file_name, chunk_text, embedding=None):
     # Veritabanına bağlanıyoruz.
     connection = sqlite3.connect(DB_NAME)
     cursor = connection.cursor()
 
+    # Embedding varsa JSON string'e çeviriyoruz.
+    # Embedding yoksa None olarak kalır.
+    embedding_json = json.dumps(embedding) if embedding is not None else None
+
     # Bir chunk kaydı ekliyoruz.
-    # ? işaretleri güvenli veri yerleştirmek için kullanılır.
+    # file_name: dosya adı
+    # chunk_text: metin parçası
+    # embedding: metnin sayısal temsili
     cursor.execute(
-        "INSERT INTO documents (file_name, chunk_text) VALUES (?, ?)",
-        (file_name, chunk_text)
+        "INSERT INTO documents (file_name, chunk_text, embedding) VALUES (?, ?, ?)",
+        (file_name, chunk_text, embedding_json)
     )
 
     # Ekleme işlemini kaydediyoruz.
