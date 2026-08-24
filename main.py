@@ -1,18 +1,31 @@
 from pathlib import Path
 
-#main fonksiyonu tanımlıyorum
-#belgelerin konumunu belirliyorum ve .txt ile biten tum belgeleri alıyoeuz.
-#turkçe karakterler bozulmasın diye utf-8
-def main(): 
+
+def split_into_chunks(text):
+    chunks = []
+
+    for line in text.splitlines():
+        cleaned_line = line.strip()
+
+        if cleaned_line:
+            chunks.append(cleaned_line)
+
+    return chunks
+
+
+def main():
     documents_folder = Path("documents")
+
     for file_path in documents_folder.glob("*.txt"):
         content = file_path.read_text(encoding="utf-8")
+        chunks = split_into_chunks(content)
+
         print("Dosya adı:", file_path.name)
-        print("Dosya içeriği:")
-        print(content)
+        print("Chunk sayısı:", len(chunks))
+
+        for index, chunk in enumerate(chunks, start=1):
+            print(f"Chunk {index}: {chunk}")
 
 
 if __name__ == "__main__":
     main()
-
-    #bu dosya çalışırsa main fonksiyonunu çalıştır.
