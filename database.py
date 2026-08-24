@@ -86,6 +86,6 @@ def get_all_documents():
 
 
 # Bu dosya direkt çalıştırılırsa create_database() fonksiyonu çalışır.
-if __name__ == "__main__
+if __name__ == "__main__":
     create_database()
     print("Database created successfully.")
