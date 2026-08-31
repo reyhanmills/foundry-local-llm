@@ -10,6 +10,9 @@ from database import get_all_documents
 # Kullanıcı sorusundan embedding üretmek için embedding_utils.py içinden fonksiyon alıyoruz.
 from embedding_utils import generate_embedding
 
+# Bulunan chunk'ı context olarak kullanıp LLM'den cevap üretmek için kullanıyoruz.
+from answer_generator import generate_answer
+
 
 def cosine_similarity(vector_a, vector_b):
     # Liste olarak gelen embeddingleri numpy array formatına çeviriyoruz.
@@ -79,6 +82,11 @@ if __name__ == "__main__":
         print("Dosya:", result["file_name"])
         print("Skor:", result["score"])
         print("Metin:", result["chunk_text"])
+
+        # Bulunan chunkı context olarak kullanıp LLM'den cevap üretiyoruz.
+        answer = generate_answer(question, result["chunk_text"])
+
+        print("\nModel cevabı:")
+        print(answer)
     else:
         print("Alakalı bir chunk bulunamadı.")
-        
