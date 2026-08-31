@@ -79,7 +79,7 @@ def get_all_documents():
     cursor = connection.cursor()
 
     # documents tablosundaki tüm kayıtları seçiyoruz.
-    cursor.execute("SELECT id, file_name, chunk_text FROM documents")
+    cursor.execute("SELECT id, file_name, chunk_text, embedding FROM documents")
 
     # Seçilen tüm kayıtları Python listesi olarak alıyoruz.
     rows = cursor.fetchall()

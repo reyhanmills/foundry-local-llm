@@ -3,6 +3,8 @@ from pathlib import Path
 
 # database.py içindeki fonksiyonları bu dosyada kullanmak için içe aktarıyoruz.
 from database import create_database, clear_documents, save_chunk, get_all_documents
+
+# embedding_utils.py içindeki embedding üretme fonksiyonunu kullanıyoruz.
 from embedding_utils import generate_embedding
 
 
@@ -45,7 +47,7 @@ def main():
         print("Dosya adı:", file_path.name)
         print("Chunk sayısı:", len(chunks))
 
-        # Her chunkı hem terminale yazdırıyoruz hem de veritabanına kaydediyoruz.
+        # Her chunk için embedding üretip veritabanına kaydediyoruz.
         for index, chunk in enumerate(chunks, start=1):
             print(f"Chunk {index}: {chunk}")
 
@@ -60,12 +62,9 @@ def main():
     # Veritabanına kaydedilen kayıtları tekrar okuyoruz.
     saved_documents = get_all_documents()
 
-    # Kaç kayıt olduğunu terminale yazdırıyoruz.
+    # Sadece kayıt sayısını terminale yazdırıyoruz.
+    # Embedding değerlerini yazdırmıyoruz çünkü çok uzunlar.
     print("Veritabanındaki kayıt sayısı:", len(saved_documents))
-
-    # Veritabanındaki her kaydı terminale yazdırıyoruz.
-    for document in saved_documents:
-        print(document)
 
 
 if __name__ == "__main__":

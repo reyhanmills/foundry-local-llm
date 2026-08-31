@@ -1,49 +1,58 @@
-# database.py içindeki get_all_documents fonksiyonunu kullanıyoruz.
-# Bu fonksiyon SQLite içindeki tüm chunkları getirir.
+# JSON formatındaki embedding bilgisini tekrar Python listesine çevirmek için kullanıyoruz.
+import json
+
+# Matematiksel işlemler ve cosine similarity hesaplamak için numpy kullanıyoruz.
+import numpy as np
+
+# Veritabanındaki kayıtları okumak için database.py içinden fonksiyon alıyoruz.
 from database import get_all_documents
 
+# Kullanıcı sorusundan embedding üretmek için embedding_utils.py içinden fonksiyon alıyoruz.
+from embedding_utils import generate_embedding
 
-def calculate_similarity(question, chunk_text):
-    # Kullanıcının sorusunu küçük harflere çeviriyoruz.
-    question = question.lower()
 
-    # Chunk metnini küçük harflere çeviriyoruz.
-    chunk_text = chunk_text.lower()
+def cosine_similarity(vector_a, vector_b):
+    # Liste olarak gelen embeddingleri numpy array formatına çeviriyoruz.
+    a = np.array(vector_a)
+    b = np.array(vector_b)
 
-    # Sorudaki kelimeleri parçalayarak bir kümeye çeviriyoruz.
-    question_words = set(question.split())
+    # Cosine similarity formülü:
+    # iki vektör arasındaki anlamsal benzerliği ölçer.
+    similarity = np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
 
-    # Chunk içindeki kelimeleri parçalayarak bir kümeye çeviriyoruz.
-    chunk_words = set(chunk_text.split())
-
-    # Sorudaki ve chunk içindeki ortak kelimeleri buluyoruz.
-    common_words = question_words.intersection(chunk_words)
-
-    # Benzerlik skoru olarak ortak kelime sayısını kullanıyoruz.
-    return len(common_words)
+    # Sonucu normal Python float olarak geri döndürüyoruz.
+    return float(similarity)
 
 
 def find_best_chunk(question):
-    # Veritabanındaki tüm chunkları alıyoruz.
+    # Kullanıcının sorduğu soruyu embedding'e çeviriyoruz.
+    question_embedding = generate_embedding(question)
+
+    # Veritabanındaki tüm chunk kayıtlarını alıyoruz.
     documents = get_all_documents()
 
-    # En iyi sonucu saklamak için başlangıç değerleri.
+    # En iyi sonucu başlangıçta boş tutuyoruz.
     best_chunk = None
-    best_score = 0
+    best_score = -1
 
-    # Her chunkı tek tek geziyoruz.
+    # Her document kaydını tek tek geziyoruz.
     for document in documents:
-        # document yapısı şu şekilde:
-        # (id, file_name, chunk_text)
         document_id = document[0]
         file_name = document[1]
         chunk_text = document[2]
+        embedding_json = document[3]
+
+        # Eğer embedding boşsa bu kaydı atlıyoruz.
+        if embedding_json is None:
+            continue
+
+        # SQLite içinde TEXT olarak duran embedding'i tekrar Python listesine çeviriyoruz.
+        chunk_embedding = json.loads(embedding_json)
 
         # Kullanıcı sorusu ile chunk arasındaki benzerliği hesaplıyoruz.
-        score = calculate_similarity(question, chunk_text)
+        score = cosine_similarity(question_embedding, chunk_embedding)
 
-        # Eğer bu skor önceki en iyi skordan büyükse,
-        # bu chunkı en iyi sonuç olarak kaydediyoruz.
+        # Eğer bu skor şimdiye kadarki en iyi skordan yüksekse sonucu güncelliyoruz.
         if score > best_score:
             best_score = score
             best_chunk = {
@@ -53,18 +62,18 @@ def find_best_chunk(question):
                 "score": score,
             }
 
-    # En iyi chunkı geri döndürüyoruz.
+    # En alakalı chunk sonucunu geri döndürüyoruz.
     return best_chunk
 
 
 if __name__ == "__main__":
-    # Test için kullanıcıdan soru alıyoruz.
+    # Kullanıcıdan terminal üzerinden soru alıyoruz.
     question = input("Sorunuz: ")
 
-    # Soruya en yakın chunkı buluyoruz.
+    # Soruyla en alakalı chunkı buluyoruz.
     result = find_best_chunk(question)
 
-    # Sonucu terminalde gösteriyoruz.
+    # Sonucu terminale yazdırıyoruz.
     if result:
         print("En alakalı chunk:")
         print("Dosya:", result["file_name"])
@@ -72,3 +81,4 @@ if __name__ == "__main__":
         print("Metin:", result["chunk_text"])
     else:
         print("Alakalı bir chunk bulunamadı.")
+        
