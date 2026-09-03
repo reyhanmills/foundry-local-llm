@@ -6,7 +6,7 @@ from openai import OpenAI
 # Foundry Local server adresi.
 # Bu adres foundry server status çıktısında görülen local adrestir.
 client = OpenAI(
-    base_url="http://127.0.0.1:52685/v1",
+    base_url="http://127.0.0.1:51169/v1",
     api_key="not-needed"
 )
 

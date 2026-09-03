@@ -6,7 +6,7 @@ import re
 
 # Foundry Local server adresi.
 client = OpenAI(
-    base_url="http://127.0.0.1:52685/v1",
+    base_url="http://127.0.0.1:51169/v1",
     api_key="not-needed"
 )
 
