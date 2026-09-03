@@ -1,4 +1,6 @@
 # Retrieval işlemi için find_best_chunk fonksiyonunu kullanıyoruz.
+from openai import APIConnectionError, BadRequestError, NotFoundError
+
 from retrieval import find_best_chunk
 
 # Cevap üretmek için generate_answer fonksiyonunu kullanıyoruz.
@@ -25,22 +27,27 @@ def main():
             print("Lütfen bir soru yaz.")
             continue
 
-        # Soruyla en alakalı chunkı buluyoruz.
-        result = find_best_chunk(question)
+        try:
+            # Soruyla en alakalı chunkı buluyoruz.
+            result = find_best_chunk(question)
 
-        # Eğer alakalı chunk bulunursa cevap üretiyoruz.
-        if result:
-            answer = generate_answer(question, result["chunk_text"])
+            # Eğer alakalı chunk bulunursa cevap üretiyoruz.
+            if result:
+                answer = generate_answer(question, result["chunk_text"])
 
-            print("\nCevap:")
-            print(answer)
+                print("\nCevap:")
+                print(answer)
 
-            print("\nKaynak:")
-            print("Dosya:", result["file_name"])
-            print("Skor:", result["score"])
-            print("Metin:", result["chunk_text"])
-        else:
-            print("Alakalı bir chunk bulunamadı.")
+                print("\nKaynak:")
+                print("Dosya:", result["file_name"])
+                print("Skor:", result["score"])
+                print("Metin:", result["chunk_text"])
+            else:
+                print("Alakalı bir chunk bulunamadı.")
+        except APIConnectionError:
+            print("Foundry Local server çalışmıyor. Lütfen önce `foundry server start` çalıştır.")
+        except (NotFoundError, BadRequestError):
+            print("Gerekli model load edilmemiş. Lütfen embedding ve chat modellerini tekrar load et.")
 
 
 if __name__ == "__main__":
