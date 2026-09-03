@@ -1,5 +1,5 @@
 # Retrieval işlemi için find_best_chunk fonksiyonunu kullanıyoruz.
-from retrieval_demo import find_best_chunk
+from retrieval import find_best_chunk
 
 # Cevap üretmek için generate_answer fonksiyonunu kullanıyoruz.
 from answer_generator import generate_answer
