@@ -1,12 +1,13 @@
 # OpenAI client'ı kullanıyoruz.
 # Foundry Local server, OpenAI uyumlu API gibi çalışıyor.
 from openai import OpenAI
+from config import FOUNDRY_BASE_URL
 
 
 # Foundry Local server adresi.
 # Bu adres foundry server status çıktısında görülen local adrestir.
 client = OpenAI(
-    base_url="http://127.0.0.1:51169/v1",
+    base_url=FOUNDRY_BASE_URL,
     api_key="not-needed"
 )
 
