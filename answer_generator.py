@@ -17,8 +17,8 @@ MODEL_NAME = "qwen3-0.6b"
 
 
 def clean_model_answer(answer):
-    # Model <think>...</think> bloğu üretirse bu kısmı siliyoruz.
-    answer = re.sub(r"<think>.*?</think>", "", answer, flags=re.DOTALL)
+    # Tamamlanmış veya yarıda kesilmiş <think> bloğunu siliyoruz.
+    answer = re.sub(r"<think>.*?(?:</think>|$)", "", answer, flags=re.DOTALL)
 
     # Boşlukları temizliyoruz.
     answer = answer.strip()
